@@ -5,7 +5,7 @@ export const useSettingsStore = create(
   persist(
     (set) => ({
       openRouterApiKey: '',
-      openRouterModelId: 'openai/gpt-4.1-mini',
+      openRouterModelId: 'google/gemini-3.1-flash-lite-preview',
       customSystemPrompt: '',
       customTemperature: '',
       setOpenRouterApiKey: (openRouterApiKey) => set({ openRouterApiKey }),
