@@ -78,22 +78,22 @@ JSON 结构：
 - publish_recommendation 控制在 40 个中文字符以内
 - hit_points 最多返回 5 项，优先列最危险的
 - fix_suggestions 最多返回 4 项，每项控制在 30 个中文字符以内
-- review_profile 每项控制在 40 个中文字符以内`,
-};
+- review_profile 每项控制在 40 个中文字符以内`
+}
 
 const platformGuidanceMap = {
-  "通用": `按通用中文内容平台的风控视角判断，重点看夸张承诺、导流、医疗金融敏感项、低俗攻击和误导标题。`,
-  "小红书": `重点关注种草、软广、疗效暗示、过度种草引导、私信导流、夸张前后对比、封面党和笔记商业化表达。`,
-  "抖音": `重点关注强诱导成交、导流私域、夸张收益、低俗擦边、口播里的承诺型表达，以及封面和短标题的刺激性文案。`,
-  "视频号": `重点关注私域导流、课程成交、养生和健康承诺、情绪煽动、群体攻击，以及公众号联动引流。`,
-  "公众号": `重点关注标题党、医疗与金融权威背书、长文中的夸张论断、私域导流、广告软文伪装成资讯或观点。`,
-};
+  通用: '按通用中文内容平台的风控视角判断，重点看夸张承诺、导流、医疗金融敏感项、低俗攻击和误导标题。',
+  小红书: '重点关注种草、软广、疗效暗示、过度种草引导、私信导流、夸张前后对比、封面党和笔记商业化表达。',
+  抖音: '重点关注强诱导成交、导流私域、夸张收益、低俗擦边、口播里的承诺型表达，以及封面和短标题的刺激性文案。',
+  视频号: '重点关注私域导流、课程成交、养生和健康承诺、情绪煽动、群体攻击，以及公众号联动引流。',
+  公众号: '重点关注标题党、医疗与金融权威背书、长文中的夸张论断、私域导流、广告软文伪装成资讯或观点。'
+}
 
-export function buildContentReviewPrompt(platform) {
-  const platformGuidance = platformGuidanceMap[platform] || platformGuidanceMap["通用"];
+export function buildContentReviewPrompt (platform) {
+  const platformGuidance = platformGuidanceMap[platform] || platformGuidanceMap['通用']
 
   return `${defaultContentReviewProfile.systemPrompt}
 
 平台补充说明：
-${platformGuidance}`;
+${platformGuidance}`
 }

@@ -117,6 +117,17 @@ pnpm build
 
 然后发布 `dist` 目录内容即可。
 
+当前仓库也已提供 GitHub Actions workflow：
+
+- [.github/workflows/deploy-pages.yml](/Users/monsterstep/dev/opensource/air/.github/workflows/deploy-pages.yml)
+
+推荐做法：
+
+1. 推送代码到 `main`
+2. 打开仓库 `Settings > Pages`
+3. 将 `Source` 切换为 `GitHub Actions`
+4. 等待 workflow 自动构建并发布 `dist`
+
 当前 `vite.config.js` 已设置：
 
 ```js
