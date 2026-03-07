@@ -477,21 +477,9 @@ export default function App() {
                 </div>
                 <div>
                   <div className="mb-1 text-xs uppercase tracking-[0.22em] text-slate-400">
-                    API Key
-                  </div>
-                  <div className="truncate">{maskedApiKey}</div>
-                </div>
-                <div>
-                  <div className="mb-1 text-xs uppercase tracking-[0.22em] text-slate-400">
                     评价温度
                   </div>
                   <div>{resolvedInfoTemperature}</div>
-                </div>
-                <div>
-                  <div className="mb-1 text-xs uppercase tracking-[0.22em] text-slate-400">
-                    提示词来源
-                  </div>
-                  <div>{customSystemPrompt.trim() ? "用户覆盖" : "默认体系"}</div>
                 </div>
               </div>
 
