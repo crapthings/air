@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "Instrument Sans", "Inter", sans-serif;
+  color: #111827;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.95), rgba(240, 244, 255, 0.92) 35%, rgba(231, 239, 247, 0.98) 100%);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+textarea {
+  font: inherit;
+}
