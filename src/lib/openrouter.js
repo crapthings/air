@@ -119,6 +119,130 @@ function normalizeReview (data) {
   }
 }
 
+function normalizeScriptEvaluation (data) {
+  const strengths = Array.isArray(data?.strengths)
+    ? data.strengths.slice(0, 4).map((item) => String(item ?? ''))
+    : []
+
+  const problems = Array.isArray(data?.problems)
+    ? data.problems.slice(0, 5).map((item) => String(item ?? ''))
+    : []
+
+  return {
+    summary: String(data?.summary ?? ''),
+    totals: {
+      hook_power: normalizeScore(data?.totals?.hook_power),
+      narrative_power: normalizeScore(data?.totals?.narrative_power)
+    },
+    scores: {
+      hook_strength: normalizeScore(data?.scores?.hook_strength),
+      retention_potential: normalizeScore(data?.scores?.retention_potential),
+      rhythm_control: normalizeScore(data?.scores?.rhythm_control),
+      memorability: normalizeScore(data?.scores?.memorability),
+      setup_clarity: normalizeScore(data?.scores?.setup_clarity),
+      conflict_strength: normalizeScore(data?.scores?.conflict_strength),
+      structure_integrity: normalizeScore(data?.scores?.structure_integrity),
+      emotion_build: normalizeScore(data?.scores?.emotion_build)
+    },
+    reasons: {
+      hook_strength: String(data?.reasons?.hook_strength ?? ''),
+      retention_potential: String(data?.reasons?.retention_potential ?? ''),
+      rhythm_control: String(data?.reasons?.rhythm_control ?? ''),
+      memorability: String(data?.reasons?.memorability ?? ''),
+      setup_clarity: String(data?.reasons?.setup_clarity ?? ''),
+      conflict_strength: String(data?.reasons?.conflict_strength ?? ''),
+      structure_integrity: String(data?.reasons?.structure_integrity ?? ''),
+      emotion_build: String(data?.reasons?.emotion_build ?? '')
+    },
+    strengths,
+    problems,
+    revisionSuggestions: {
+      opening: String(data?.revision_suggestions?.opening ?? ''),
+      middle: String(data?.revision_suggestions?.middle ?? ''),
+      ending: String(data?.revision_suggestions?.ending ?? ''),
+      format: String(data?.revision_suggestions?.format ?? '')
+    },
+    fit: {
+      bestFormat: String(data?.fit?.best_format ?? ''),
+      shortVideoFit: String(data?.fit?.short_video_fit ?? ''),
+      longVideoFit: String(data?.fit?.long_video_fit ?? ''),
+      platformNote: String(data?.fit?.platform_note ?? '')
+    },
+    profile: {
+      coreSellingPoint: String(data?.profile?.core_selling_point ?? ''),
+      biggestWeakness: String(data?.profile?.biggest_weakness ?? ''),
+      audiencePull: String(data?.profile?.audience_pull ?? ''),
+      storyShape: String(data?.profile?.story_shape ?? '')
+    }
+  }
+}
+
+function normalizeLanguageAnalysis (data) {
+  const rhetoricalDevices = Array.isArray(data?.detected_features?.rhetorical_devices)
+    ? data.detected_features.rhetorical_devices.slice(0, 5).map((item) => String(item ?? ''))
+    : []
+
+  const sentencePatterns = Array.isArray(data?.detected_features?.sentence_patterns)
+    ? data.detected_features.sentence_patterns.slice(0, 5).map((item) => String(item ?? ''))
+    : []
+
+  const styleModes = Array.isArray(data?.detected_features?.style_modes)
+    ? data.detected_features.style_modes.slice(0, 5).map((item) => String(item ?? ''))
+    : []
+
+  const problems = Array.isArray(data?.problems)
+    ? data.problems.slice(0, 5).map((item) => String(item ?? ''))
+    : []
+
+  return {
+    summary: String(data?.summary ?? ''),
+    scores: {
+      syntax_control: normalizeScore(data?.scores?.syntax_control),
+      long_sentence_control: normalizeScore(data?.scores?.long_sentence_control),
+      rhetoric_effectiveness: normalizeScore(data?.scores?.rhetoric_effectiveness),
+      rhythm_structure: normalizeScore(data?.scores?.rhythm_structure),
+      tone_stability: normalizeScore(data?.scores?.tone_stability),
+      expressive_tension: normalizeScore(data?.scores?.expressive_tension),
+      style_distinctness: normalizeScore(data?.scores?.style_distinctness),
+      posture_density: normalizeScore(data?.scores?.posture_density)
+    },
+    reasons: {
+      syntax_control: String(data?.reasons?.syntax_control ?? ''),
+      long_sentence_control: String(data?.reasons?.long_sentence_control ?? ''),
+      rhetoric_effectiveness: String(data?.reasons?.rhetoric_effectiveness ?? ''),
+      rhythm_structure: String(data?.reasons?.rhythm_structure ?? ''),
+      tone_stability: String(data?.reasons?.tone_stability ?? ''),
+      expressive_tension: String(data?.reasons?.expressive_tension ?? ''),
+      style_distinctness: String(data?.reasons?.style_distinctness ?? ''),
+      posture_density: String(data?.reasons?.posture_density ?? '')
+    },
+    detectedFeatures: {
+      rhetoricalDevices,
+      sentencePatterns,
+      styleModes
+    },
+    problems,
+    revisionSuggestions: {
+      sentence: String(data?.revision_suggestions?.sentence ?? ''),
+      rhythm: String(data?.revision_suggestions?.rhythm ?? ''),
+      rhetoric: String(data?.revision_suggestions?.rhetoric ?? ''),
+      tone: String(data?.revision_suggestions?.tone ?? '')
+    },
+    commentary: {
+      styleSummary: String(data?.commentary?.style_summary ?? ''),
+      languageMechanism: String(data?.commentary?.language_mechanism ?? ''),
+      dominantEffect: String(data?.commentary?.dominant_effect ?? ''),
+      riskNote: String(data?.commentary?.risk_note ?? '')
+    },
+    profile: {
+      coreStrength: String(data?.profile?.core_strength ?? ''),
+      coreWeakness: String(data?.profile?.core_weakness ?? ''),
+      writerTendency: String(data?.profile?.writer_tendency ?? ''),
+      readingExperience: String(data?.profile?.reading_experience ?? '')
+    }
+  }
+}
+
 async function requestOpenRouter ({ apiKey, model, systemPrompt, input, temperature, maxTokens }) {
   const response = await fetch(OPENROUTER_URL, {
     method: 'POST',
@@ -222,5 +346,61 @@ export async function analyzeContentReview ({
     }
   } catch {
     throw new Error('审查结果不是有效 JSON，请更换模型或调整提示词。')
+  }
+}
+
+export async function analyzeScriptEvaluation ({
+  apiKey,
+  model,
+  input,
+  systemPrompt,
+  temperature,
+  maxTokens
+}) {
+  const { payload, text } = await requestOpenRouter({
+    apiKey,
+    model,
+    systemPrompt,
+    input,
+    temperature,
+    maxTokens
+  })
+
+  try {
+    return {
+      evaluation: normalizeScriptEvaluation(parseJsonPayload(text)),
+      model: payload?.model || model,
+      usage: payload?.usage ?? null
+    }
+  } catch {
+    throw new Error('脚本评估结果不是有效 JSON，请更换模型或稍后重试。')
+  }
+}
+
+export async function analyzeLanguage ({
+  apiKey,
+  model,
+  input,
+  systemPrompt,
+  temperature,
+  maxTokens
+}) {
+  const { payload, text } = await requestOpenRouter({
+    apiKey,
+    model,
+    systemPrompt,
+    input,
+    temperature,
+    maxTokens
+  })
+
+  try {
+    return {
+      analysis: normalizeLanguageAnalysis(parseJsonPayload(text)),
+      model: payload?.model || model,
+      usage: payload?.usage ?? null
+    }
+  } catch {
+    throw new Error('语言分析结果不是有效 JSON，请更换模型或稍后重试。')
   }
 }
