@@ -192,6 +192,14 @@ export function normalizeLanguageAnalysis (data) {
       sentencePatterns,
       styleModes
     },
+    auxiliary: {
+      keywords: Array.isArray(data?.auxiliary?.keywords)
+        ? data.auxiliary.keywords.slice(0, 6).map((item) => String(item ?? '')).filter(Boolean)
+        : [],
+      repetitionNote: String(data?.auxiliary?.repetition_note ?? ''),
+      transitionNote: String(data?.auxiliary?.transition_note ?? ''),
+      homogenizationNote: String(data?.auxiliary?.homogenization_note ?? '')
+    },
     problems,
     revisionSuggestions: {
       sentence: String(data?.revision_suggestions?.sentence ?? ''),

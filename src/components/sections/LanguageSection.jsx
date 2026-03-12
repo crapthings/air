@@ -144,6 +144,32 @@ export function LanguageSection (props) {
         </article>
 
         <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3'>
+            <p className='text-sm font-medium text-slate-500'>表达观察</p>
+          </div>
+          <div className='space-y-3'>
+            <div className='rounded-[1.25rem] bg-slate-100 p-3'>
+              <div className='mb-2 text-xs uppercase tracking-[0.24em] text-slate-400'>关键词</div>
+              {languageResult.auxiliary.keywords.length
+                ? <div className='flex flex-wrap gap-2'>{languageResult.auxiliary.keywords.map((item, index) => <span key={`${item}-${index}`} className='rounded-full bg-white px-3 py-1 text-sm text-slate-900'>{item}</span>)}</div>
+                : <div className='text-sm leading-6 text-slate-600'>等待提取结果。</div>}
+            </div>
+            <div className='rounded-[1.25rem] bg-slate-100 p-3'>
+              <div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>重复回词</div>
+              <div className='text-sm leading-6 text-slate-900'>{languageResult.auxiliary.repetitionNote || '等待模型观察重复用词和回环句式。'}</div>
+            </div>
+            <div className='rounded-[1.25rem] bg-slate-100 p-3'>
+              <div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>过渡衔接</div>
+              <div className='text-sm leading-6 text-slate-900'>{languageResult.auxiliary.transitionNote || '等待模型判断句间和段间过渡是否顺畅。'}</div>
+            </div>
+            <div className='rounded-[1.25rem] bg-slate-100 p-3'>
+              <div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>同质化</div>
+              <div className='text-sm leading-6 text-slate-900'>{languageResult.auxiliary.homogenizationNote || '等待模型判断表达是否模板化或套话化。'}</div>
+            </div>
+          </div>
+        </article>
+
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
           <div className='mb-3 flex items-start justify-between gap-3'>
             <div>
               <p className='text-sm font-medium text-slate-500'>一句话总评</p>

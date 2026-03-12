@@ -328,6 +328,12 @@ export const emptyLanguageResult = {
     sentencePatterns: [],
     styleModes: []
   },
+  auxiliary: {
+    keywords: [],
+    repetitionNote: '',
+    transitionNote: '',
+    homogenizationNote: ''
+  },
   problems: [],
   revisionSuggestions: {
     sentence: '',
