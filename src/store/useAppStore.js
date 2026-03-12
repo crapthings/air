@@ -14,6 +14,34 @@ const emptyRewriteResult = {
   appliedFocus: ''
 }
 
+const emptyRewriteComparison = {
+  available: false,
+  sourceView: 'analyzer',
+  beforeText: '',
+  afterText: '',
+  beforeResult: null,
+  afterResult: null
+}
+
+const emptyRewriteSelection = {
+  active: false,
+  rowIndex: null,
+  fullText: '',
+  targetText: '',
+  afterText: ''
+}
+
+const emptyLocalReanalysis = {
+  available: false,
+  isLoading: false,
+  error: '',
+  beforeResult: null,
+  afterResult: null,
+  topChanges: [],
+  activeModel: '',
+  usage: null
+}
+
 export const useAppStore = create((set) => ({
   view: 'analyzer',
   setView: (view) => set({ view }),
@@ -109,6 +137,11 @@ export const useAppStore = create((set) => ({
   rewriteActiveModel: '',
   rewriteError: '',
   isRewriting: false,
+  rewriteComparison: emptyRewriteComparison,
+  rewriteComparisonTab: 'scores',
+  rewriteTextView: 'side_by_side',
+  rewriteSelection: emptyRewriteSelection,
+  rewriteLocalReanalysis: emptyLocalReanalysis,
   setIsRewriteOpen: (isRewriteOpen) => set({ isRewriteOpen }),
   setRewriteSourceView: (rewriteSourceView) => set({ rewriteSourceView }),
   setRewriteMode: (rewriteMode) => set({ rewriteMode }),
@@ -122,6 +155,11 @@ export const useAppStore = create((set) => ({
   setRewriteActiveModel: (rewriteActiveModel) => set({ rewriteActiveModel }),
   setRewriteError: (rewriteError) => set({ rewriteError }),
   setIsRewriting: (isRewriting) => set({ isRewriting }),
+  setRewriteComparison: (rewriteComparison) => set({ rewriteComparison }),
+  setRewriteComparisonTab: (rewriteComparisonTab) => set({ rewriteComparisonTab }),
+  setRewriteTextView: (rewriteTextView) => set({ rewriteTextView }),
+  setRewriteSelection: (rewriteSelection) => set({ rewriteSelection }),
+  setRewriteLocalReanalysis: (rewriteLocalReanalysis) => set({ rewriteLocalReanalysis }),
   resetRewriteState: () =>
     set({
       rewriteMode: 'conservative',
@@ -134,6 +172,11 @@ export const useAppStore = create((set) => ({
       rewriteUsage: null,
       rewriteActiveModel: '',
       rewriteError: '',
-      isRewriting: false
+      isRewriting: false,
+      rewriteComparison: emptyRewriteComparison,
+      rewriteComparisonTab: 'scores',
+      rewriteTextView: 'side_by_side',
+      rewriteSelection: emptyRewriteSelection,
+      rewriteLocalReanalysis: emptyLocalReanalysis
     })
 }))

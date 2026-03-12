@@ -1,4 +1,5 @@
 import { MetricScoreCard } from '../shared/MetricScoreCard'
+import { MasonryMetricGrid } from '../shared/MasonryMetricGrid'
 import { NextStepCard } from '../shared/NextStepCard'
 import { UsageChips } from '../shared/UsageChips'
 import { riskLevelClass, severityClass } from '../../lib/ui/appHelpers'
@@ -11,8 +12,6 @@ export function ReviewSection (props) {
     reviewPlatform,
     setReviewPlatform,
     reviewPlatforms,
-    reviewActiveModel,
-    openRouterModelId,
     reviewTitle,
     setReviewTitle,
     reviewBody,
@@ -28,22 +27,37 @@ export function ReviewSection (props) {
     openRewriteDrawer
   } = props
 
+  const metricItems = reviewMetricMeta.map((metric) => {
+    const value = reviewResult.scores[metric.key]
+
+    return {
+      id: metric.key,
+      content: (
+        <MetricScoreCard
+          metric={metric}
+          value={value}
+          reason={reviewResult.reasons[metric.key] || '等待模型返回该项风险的解释。'}
+          isRiskMetric
+          unitLabel='风险分 100'
+        />
+      )
+    }
+  })
+
   return (
     <section className='grid flex-1 gap-4 xl:grid-cols-[minmax(0,0.86fr)_minmax(0,1.04fr)_minmax(320px,0.72fr)]'>
-      <div className='flex flex-col rounded-[1.5rem] border border-slate-200/80 bg-slate-950 p-4 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.7)] sm:p-5'>
-        <div className='mb-4 flex items-start justify-between gap-4'>
+      <div className='flex flex-col rounded-[1.5rem] border border-slate-200/80 bg-slate-950 p-4 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.7)]'>
+        <div className='mb-3 flex items-start justify-between gap-3'>
           <div>
             <h2 className='text-xl font-semibold'>审查输入</h2>
-            <p className='mt-2 text-sm leading-6 text-slate-300'>
-              分模式输入标题、正文和封面文案，适合中文自媒体发前自检和复核。
-            </p>
+            <p className='mt-1 text-sm leading-5 text-slate-300'>标题、正文和封面文案的发布前自检。</p>
           </div>
           <span className='rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300'>
             中文平台风险扫描
           </span>
         </div>
 
-        <div className='mb-4 grid gap-3 rounded-[1.25rem] border border-white/10 bg-white/5 p-3 text-sm text-slate-200'>
+        <div className='mb-3 grid gap-3 rounded-[1.25rem] border border-white/10 bg-white/5 p-3 text-sm text-slate-200'>
           <div className='flex flex-wrap gap-2'>
             {Object.entries(reviewModeMeta).map(([key, item]) => (
               <button
@@ -60,28 +74,20 @@ export function ReviewSection (props) {
               </button>
             ))}
           </div>
-          <p className='text-sm leading-6 text-slate-300'>{reviewModeMeta[reviewMode].description}</p>
-          <div className='grid gap-3 sm:grid-cols-2'>
-            <div>
-              <div className='mb-1 text-xs uppercase tracking-[0.22em] text-slate-400'>平台</div>
-              <select
-                value={reviewPlatform}
-                onChange={(event) => setReviewPlatform(event.target.value)}
-                className='w-full rounded-[1rem] border border-white/10 bg-slate-900 px-3 py-3 text-white outline-none'
-              >
-                {reviewPlatforms.map((platform) => (
-                  <option key={platform} value={platform}>
-                    {platform}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <div className='mb-1 text-xs uppercase tracking-[0.22em] text-slate-400'>当前模型</div>
-              <div className='truncate rounded-[1rem] border border-white/10 bg-slate-900 px-3 py-3'>
-                {reviewActiveModel || openRouterModelId || '未设置'}
-              </div>
-            </div>
+          <p className='text-sm leading-5 text-slate-300'>{reviewModeMeta[reviewMode].description}</p>
+          <div>
+            <div className='mb-1 text-xs uppercase tracking-[0.22em] text-slate-400'>平台</div>
+            <select
+              value={reviewPlatform}
+              onChange={(event) => setReviewPlatform(event.target.value)}
+              className='w-full rounded-[1rem] border border-white/10 bg-slate-900 px-3 py-3 text-white outline-none'
+            >
+              {reviewPlatforms.map((platform) => (
+                <option key={platform} value={platform}>
+                  {platform}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -118,7 +124,7 @@ export function ReviewSection (props) {
           </label>
         </div>
 
-        <div className='mt-4 flex justify-end'>
+        <div className='mt-3 flex justify-end'>
           <button
             type='button'
             onClick={handleReviewAnalyze}
@@ -138,29 +144,15 @@ export function ReviewSection (props) {
           : null}
       </div>
 
-      <div className='grid gap-4 md:grid-cols-2 2xl:grid-cols-3'>
-        {reviewMetricMeta.map((metric) => {
-          const value = reviewResult.scores[metric.key]
+      <div className='grid gap-4'>
+        <MasonryMetricGrid items={metricItems} columnWidth={220} maxColumnCount={3} itemHeightEstimate={280} />
+      </div>
 
-          return (
-            <MetricScoreCard
-              key={metric.key}
-              metric={metric}
-              value={value}
-              reason={reviewResult.reasons[metric.key] || '等待模型返回该项风险的解释。'}
-              isRiskMetric
-              unitLabel='风险分 100'
-            />
-          )
-        })}
-
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)] md:col-span-2 2xl:col-span-3'>
-          <div className='mb-4 flex items-start justify-between gap-4'>
+      <div className='grid auto-rows-min gap-4'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3 flex items-start justify-between gap-3'>
             <div>
               <p className='text-sm font-medium text-slate-500'>命中点</p>
-              <p className='mt-2 text-sm leading-6 text-slate-600'>
-                直接指出哪一句危险、危险在哪里、平台会怎么看。
-              </p>
             </div>
             <span className='rounded-full bg-slate-950 px-4 py-1.5 text-xs font-medium leading-none text-white'>
               {reviewResult.hitPoints.length} 项
@@ -196,16 +188,11 @@ export function ReviewSection (props) {
               </div>
               )}
         </article>
-      </div>
 
-      <div className='grid auto-rows-min gap-4'>
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4 flex items-start justify-between gap-4'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3 flex items-start justify-between gap-3'>
             <div>
               <p className='text-sm font-medium text-slate-500'>总体风险</p>
-              <p className='mt-2 text-sm leading-6 text-slate-600'>
-                综合风险等级、建议动作和发布判断。
-              </p>
             </div>
             <span
               className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium leading-none ${riskLevelClass(
@@ -235,12 +222,9 @@ export function ReviewSection (props) {
           </div>
         </article>
 
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3'>
             <p className='text-sm font-medium text-slate-500'>整改与申诉</p>
-            <p className='mt-2 text-sm leading-6 text-slate-600'>
-              随模式变化给出修改动作、复核依据或申诉方向。
-            </p>
           </div>
 
           <div className='space-y-4'>
@@ -269,12 +253,9 @@ export function ReviewSection (props) {
           </div>
         </article>
 
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3'>
             <p className='text-sm font-medium text-slate-500'>审查剖面</p>
-            <p className='mt-2 text-sm leading-6 text-slate-600'>
-              从平台敏感性和风险风格角度，快速判断这类内容为什么容易出问题。
-            </p>
           </div>
 
           <div className='space-y-3'>

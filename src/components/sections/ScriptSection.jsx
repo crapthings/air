@@ -1,4 +1,5 @@
 import { MetricScoreCard } from '../shared/MetricScoreCard'
+import { MasonryMetricGrid } from '../shared/MasonryMetricGrid'
 import { NextStepCard } from '../shared/NextStepCard'
 import { UsageChips } from '../shared/UsageChips'
 import { progressBarClass, scoreBadgeClass, scoreTone } from '../../lib/ui/appHelpers'
@@ -8,8 +9,6 @@ export function ScriptSection (props) {
     scriptPlatform,
     setScriptPlatform,
     scriptPlatforms,
-    scriptActiveModel,
-    openRouterModelId,
     scriptLengthOptions,
     scriptVideoLength,
     setScriptVideoLength,
@@ -29,43 +28,104 @@ export function ScriptSection (props) {
     openRewriteDrawer
   } = props
 
+  const metricItems = scriptMetricMeta.map((metric) => {
+    const value = scriptResult.scores[metric.key]
+
+    return {
+      id: metric.key,
+      content: (
+        <MetricScoreCard
+          metric={metric}
+          value={value}
+          reason={scriptResult.reasons[metric.key] || '等待模型返回该项脚本判断。'}
+        />
+      )
+    }
+  })
+
+  const scriptGridItems = [
+    {
+      id: 'hook-power-total',
+      content: (
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3 flex items-start justify-between gap-3'>
+            <div>
+              <p className='text-sm font-medium text-slate-500'>传播效果</p>
+              <p className='mt-1.5 text-sm leading-5 text-slate-600'>看开头抓力、推进和观众留下来的可能性。</p>
+            </div>
+            <span className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium leading-none ${scoreBadgeClass(scriptResult.totals.hook_power)}`}>
+              {scoreTone(scriptResult.totals.hook_power)}
+            </span>
+          </div>
+          <div className='text-4xl font-semibold tracking-tight text-slate-950'>{scriptResult.totals.hook_power}</div>
+          <div className='mt-2 h-2.5 overflow-hidden rounded-full bg-slate-200'>
+            <div
+              className={`h-full rounded-full transition-[width,background-color] duration-500 ${progressBarClass(scriptResult.totals.hook_power)}`}
+              style={{ width: `${scriptResult.totals.hook_power}%` }}
+            />
+          </div>
+          <p className='mt-3 text-sm leading-5 text-slate-600'>
+            {scriptResult.summary || '等待模型返回该项脚本判断。'}
+          </p>
+        </article>
+      )
+    },
+    {
+      id: 'narrative-power-total',
+      content: (
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3 flex items-start justify-between gap-3'>
+            <div>
+              <p className='text-sm font-medium text-slate-500'>叙事质量</p>
+              <p className='mt-1.5 text-sm leading-5 text-slate-600'>看结构、冲突和情绪能不能真正撑住内容。</p>
+            </div>
+            <span className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium leading-none ${scoreBadgeClass(scriptResult.totals.narrative_power)}`}>
+              {scoreTone(scriptResult.totals.narrative_power)}
+            </span>
+          </div>
+          <div className='text-4xl font-semibold tracking-tight text-slate-950'>{scriptResult.totals.narrative_power}</div>
+          <div className='mt-2 h-2.5 overflow-hidden rounded-full bg-slate-200'>
+            <div
+              className={`h-full rounded-full transition-[width,background-color] duration-500 ${progressBarClass(scriptResult.totals.narrative_power)}`}
+              style={{ width: `${scriptResult.totals.narrative_power}%` }}
+            />
+          </div>
+          <p className='mt-3 text-sm leading-5 text-slate-600'>
+            {scriptResult.profile.storyShape || '等待模型返回该项脚本判断。'}
+          </p>
+        </article>
+      )
+    },
+    ...metricItems
+  ]
+
   return (
     <section className='grid flex-1 gap-4 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.06fr)_minmax(320px,0.72fr)]'>
-      <div className='flex flex-col rounded-[1.5rem] border border-slate-200/80 bg-slate-950 p-4 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.7)] sm:p-5'>
-        <div className='mb-4 flex items-start justify-between gap-4'>
+      <div className='flex flex-col rounded-[1.5rem] border border-slate-200/80 bg-slate-950 p-4 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.7)]'>
+        <div className='mb-3 flex items-start justify-between gap-3'>
           <div>
             <h2 className='text-xl font-semibold'>脚本输入</h2>
-            <p className='mt-2 text-sm leading-6 text-slate-300'>
-              支持短视频、长视频、纯文案和分镜脚本，重点判断能不能拍和该先改哪里。
-            </p>
+            <p className='mt-1 text-sm leading-5 text-slate-300'>短视频、长视频、纯文案和分镜脚本。</p>
           </div>
           <span className='rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300'>
             双引擎评估
           </span>
         </div>
 
-        <div className='mb-4 grid gap-3 rounded-[1.25rem] border border-white/10 bg-white/5 p-3 text-sm text-slate-200'>
-          <div className='grid gap-3 sm:grid-cols-2'>
-            <div>
-              <div className='mb-1 text-xs uppercase tracking-[0.22em] text-slate-400'>平台</div>
-              <select
-                value={scriptPlatform}
-                onChange={(event) => setScriptPlatform(event.target.value)}
-                className='w-full rounded-[1rem] border border-white/10 bg-slate-900 px-3 py-3 text-white outline-none'
-              >
-                {scriptPlatforms.map((platform) => (
-                  <option key={platform} value={platform}>
-                    {platform}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <div className='mb-1 text-xs uppercase tracking-[0.22em] text-slate-400'>当前模型</div>
-              <div className='truncate rounded-[1rem] border border-white/10 bg-slate-900 px-3 py-3'>
-                {scriptActiveModel || openRouterModelId || '未设置'}
-              </div>
-            </div>
+        <div className='mb-3 grid gap-3 rounded-[1.25rem] border border-white/10 bg-white/5 p-3 text-sm text-slate-200'>
+          <div>
+            <div className='mb-1 text-xs uppercase tracking-[0.22em] text-slate-400'>平台</div>
+            <select
+              value={scriptPlatform}
+              onChange={(event) => setScriptPlatform(event.target.value)}
+              className='w-full rounded-[1rem] border border-white/10 bg-slate-900 px-3 py-3 text-white outline-none'
+            >
+              {scriptPlatforms.map((platform) => (
+                <option key={platform} value={platform}>
+                  {platform}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className='grid gap-3 sm:grid-cols-2'>
@@ -108,9 +168,7 @@ export function ScriptSection (props) {
               </div>
             </div>
           </div>
-          <p className='text-sm leading-6 text-slate-300'>
-            短视频更看钩子和完播，长视频更看结构和情绪；分镜脚本会额外判断画面推进是否真的服务内容。
-          </p>
+          <p className='text-sm leading-5 text-slate-300'>短视频偏钩子与完播，长视频偏结构与情绪。</p>
         </div>
 
         <div className='grid gap-3'>
@@ -133,12 +191,12 @@ export function ScriptSection (props) {
               placeholder={scriptFormat === '分镜脚本'
                 ? '可自由输入镜头、画面、台词、旁白、字幕、音效，不强制固定模板。'
                 : '粘贴口播稿、剧情稿、解说稿或长视频脚本正文...'}
-              className='min-h-[360px] w-full resize-y rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-sky-400/60'
+              className='min-h-[320px] w-full resize-y rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-sky-400/60'
             />
           </label>
         </div>
 
-        <div className='mt-4 flex justify-end'>
+        <div className='mt-3 flex justify-end'>
           <button
             type='button'
             onClick={handleScriptAnalyze}
@@ -158,70 +216,13 @@ export function ScriptSection (props) {
           : null}
       </div>
 
-      <div className='grid gap-4 md:grid-cols-2 2xl:grid-cols-2'>
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4 flex items-start justify-between gap-4'>
-            <div>
-              <p className='text-sm font-medium text-slate-500'>传播效果</p>
-              <p className='mt-2 text-sm leading-6 text-slate-600'>
-                回答这份脚本能不能拉住观众，并把观众带到后面。
-              </p>
-            </div>
-            <span className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium leading-none ${scoreBadgeClass(scriptResult.totals.hook_power)}`}>
-              {scoreTone(scriptResult.totals.hook_power)}
-            </span>
-          </div>
-          <div className='text-4xl font-semibold tracking-tight text-slate-950'>{scriptResult.totals.hook_power}</div>
-          <div className='mt-2 h-2.5 overflow-hidden rounded-full bg-slate-200'>
-            <div
-              className={`h-full rounded-full transition-[width,background-color] duration-500 ${progressBarClass(scriptResult.totals.hook_power)}`}
-              style={{ width: `${scriptResult.totals.hook_power}%` }}
-            />
-          </div>
-        </article>
+      <MasonryMetricGrid items={scriptGridItems} columnWidth={220} maxColumnCount={2} itemHeightEstimate={280} />
 
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4 flex items-start justify-between gap-4'>
-            <div>
-              <p className='text-sm font-medium text-slate-500'>叙事质量</p>
-              <p className='mt-2 text-sm leading-6 text-slate-600'>
-                回答这份脚本结构是否成立，情绪和冲突能不能真正撑住内容。
-              </p>
-            </div>
-            <span className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium leading-none ${scoreBadgeClass(scriptResult.totals.narrative_power)}`}>
-              {scoreTone(scriptResult.totals.narrative_power)}
-            </span>
-          </div>
-          <div className='text-4xl font-semibold tracking-tight text-slate-950'>{scriptResult.totals.narrative_power}</div>
-          <div className='mt-2 h-2.5 overflow-hidden rounded-full bg-slate-200'>
-            <div
-              className={`h-full rounded-full transition-[width,background-color] duration-500 ${progressBarClass(scriptResult.totals.narrative_power)}`}
-              style={{ width: `${scriptResult.totals.narrative_power}%` }}
-            />
-          </div>
-        </article>
-
-        {scriptMetricMeta.map((metric) => {
-          const value = scriptResult.scores[metric.key]
-          return (
-            <MetricScoreCard
-              key={metric.key}
-              metric={metric}
-              value={value}
-              reason={scriptResult.reasons[metric.key] || '等待模型返回该项脚本判断。'}
-            />
-          )
-        })}
-      </div>
-
-      <div className='grid auto-rows-min gap-4'>
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4 flex items-start justify-between gap-4'>
+      <div className='grid auto-rows-min gap-3'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3 flex items-start justify-between gap-3'>
             <div>
               <p className='text-sm font-medium text-slate-500'>一句话总评</p>
-              <p className='mt-2 text-sm leading-6 text-slate-600'>
-                快速判断这稿子现在值不值得拍，主要强项和短板是什么。
-              </p>
             </div>
             <span className='shrink-0 whitespace-nowrap rounded-full bg-slate-950 px-4 py-1.5 text-xs font-medium leading-none text-white'>
               {isScriptAnalyzing ? '处理中' : '已就绪'}
@@ -232,12 +233,11 @@ export function ScriptSection (props) {
           </p>
         </article>
 
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3'>
             <p className='text-sm font-medium text-slate-500'>优势与问题</p>
-            <p className='mt-2 text-sm leading-6 text-slate-600'>先抓最能打的点，再抓最影响成片效果的点。</p>
           </div>
-          <div className='space-y-4'>
+          <div className='space-y-3'>
             <div>
               <div className='mb-2 text-xs uppercase tracking-[0.24em] text-slate-400'>主要优势</div>
               {scriptResult.strengths.length
@@ -269,10 +269,9 @@ export function ScriptSection (props) {
           </div>
         </article>
 
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3'>
             <p className='text-sm font-medium text-slate-500'>改稿建议</p>
-            <p className='mt-2 text-sm leading-6 text-slate-600'>按开头、中段、结尾和表现形式拆开给建议，避免只给空泛点评。</p>
           </div>
           <div className='space-y-3'>
             <div className='rounded-[1.25rem] bg-slate-100 p-3'><div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>开头</div><div className='text-sm leading-6 text-slate-900'>{scriptResult.revisionSuggestions.opening || '等待模型指出开头应该如何更快建立吸引力。'}</div></div>
@@ -282,10 +281,9 @@ export function ScriptSection (props) {
           </div>
         </article>
 
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3'>
             <p className='text-sm font-medium text-slate-500'>适配判断</p>
-            <p className='mt-2 text-sm leading-6 text-slate-600'>告诉你这份稿子更适合什么长度、什么表达方式，以及平台侧注意点。</p>
           </div>
           <div className='space-y-3'>
             <div className='rounded-[1.25rem] bg-slate-100 p-3'><div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>最佳形式</div><div className='text-sm leading-6 text-slate-900'>{scriptResult.fit.bestFormat || '等待模型判断这份脚本更适合的成片形式。'}</div></div>
@@ -295,10 +293,9 @@ export function ScriptSection (props) {
           </div>
         </article>
 
-        <article className='rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
-          <div className='mb-4'>
+        <article className='rounded-[1.5rem] border border-white/80 bg-white p-3.5 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.45)]'>
+          <div className='mb-3'>
             <p className='text-sm font-medium text-slate-500'>脚本剖面</p>
-            <p className='mt-2 text-sm leading-6 text-slate-600'>用更压缩的方式总结这稿子的卖点、短板和结构形态。</p>
           </div>
           <div className='space-y-3'>
             <div className='rounded-[1.25rem] bg-slate-100 p-3'><div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>核心卖点</div><div className='text-sm leading-6 text-slate-900'>{scriptResult.profile.coreSellingPoint || '等待模型概括这份脚本最应该被保留的卖点。'}</div></div>

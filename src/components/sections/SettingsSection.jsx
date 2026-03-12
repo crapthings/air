@@ -10,9 +10,7 @@ export function SettingsSection (props) {
     setCustomTemperature,
     defaultEvaluationProfile,
     resetEvaluationSettings,
-    maskedApiKey,
-    resolvedInfoTemperature,
-    resolvedReviewTemperature
+    maskedApiKey
   } = props
 
   return (
@@ -96,20 +94,8 @@ export function SettingsSection (props) {
               <div className='break-all text-slate-900'>{maskedApiKey}</div>
             </div>
             <div className='rounded-[1.25rem] bg-slate-100 p-3'>
-              <div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>模型 ID</div>
-              <div className='break-all text-slate-900'>{openRouterModelId || '未设置'}</div>
-            </div>
-            <div className='rounded-[1.25rem] bg-slate-100 p-3'>
               <div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>信息评分器提示词</div>
               <div className='text-slate-900'>{customSystemPrompt.trim() ? '使用用户覆盖' : '使用内置默认评价体系'}</div>
-            </div>
-            <div className='rounded-[1.25rem] bg-slate-100 p-3'>
-              <div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>信息评分温度</div>
-              <div className='text-slate-900'>{resolvedInfoTemperature}</div>
-            </div>
-            <div className='rounded-[1.25rem] bg-slate-100 p-3'>
-              <div className='mb-1 text-xs uppercase tracking-[0.24em] text-slate-400'>审查台温度</div>
-              <div className='text-slate-900'>{resolvedReviewTemperature}</div>
             </div>
           </div>
         </article>
